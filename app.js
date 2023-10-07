@@ -11,15 +11,16 @@ const redisClient = redis.createClient({ host: 'redis' });
 app.post('/auth', async (req, res) => {
   try {
     const { login, password } = req.body;
-
+    const  PHPSESSID  = 1
     console.log(req.body, login, password)
 
     const authResponse = await axios.post('https://trending.bid/login', {
       login,
       password,
+      PHPSESSID,
     });
 
-    // console.log(authResponse)
+    console.log(authResponse)
     if (authResponse.status === 200 ) {
       console.log(authResponse.data, authResponse.token)
       redisClient.set('auth_token', authResponse.data.token);
@@ -35,7 +36,6 @@ app.post('/auth', async (req, res) => {
 
 app.get('/balance', async (req, res) => {
   try {
-    // Получите токен из Redis
     const authToken = await new Promise((resolve, reject) => {
       redisClient.get('auth_token', (err, reply) => {
         if (err) reject(err);
